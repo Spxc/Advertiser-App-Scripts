@@ -1,87 +1,66 @@
-/***************************************************
-* Budget script 
-* Version 2.0
-* Created By: Vegard R. Garder
-*
-* Last updated 06.09.2018
-* Max 50 accounts per run. 
-****************************************************/
+/** 
+Name: budgetCheck
+Function: Budget checker for accounts from MCC
+(c): Stian Wiik Instebø - 2019
+**/
 
-//Insert your own spreadsheet URL and the name of your spreadsheet. Make sure SHEET_NAME is correct. 
-// Make a copy of: https://docs.google.com/spreadsheets/d/1e0ayTNBbqht-AyduN-ItVGkhc4wKKfM-JgyTf7r1ft4/edit#gid=16
-var SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1VOSnIUfYaVRbxxjhnfLk9WEcEFRPoWA9S-yvGJ2mTBU/edit?usp=sharing";
-var SHEET_NAME = "Google Ads Budsjett";
+/** GLOBAL VARS **/
 
-//Change account label to your own
-var ACCOUNT_LABEL = "PPC NAME";
+var PPC_SPECIALIST = "Stian";
 
-//Set to true to create a new sheet with account name, cost for the last 7 days, and cost for this month. 
-//Set to false to only write cost directly to your spreadsheet. Make sure you have the correct SHEET_NAME. 
-var writeAccountsToSheet = false;
+var now = new Date();
+var timeZone = AdsApp.currentAccount().getTimeZone();
 
-//Check to see if there is a mismatch between number of accounts in Google Ads and sheet. 
-var checkNumberOfAccounts = false;
+var startDate = Utilities.formatDate(new Date(), timeZone, 'yyyyMMdd');
+var endDate = Utilities.formatDate(new Date(now.setDate(now.getDate()-30)), timeZone, 'yyyyMMdd');
 
-//Insert column/row for cost last 7 days starts. Column "A" equals 1, column "B" equals 2 and so on. 
-var column = "4";
-var row = "5";
+var SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1W0Y6Obs98PSX_DRdJBbMfBNghdn48weyH4uXfRm-_vA/edit?usp=sharing';
+var ss = SpreadsheetApp.openByUrl(SPREADSHEET_URL);
+//var SHEET_NAME = ;
+var sheet = ss.getSheetByName(ss.getSheetName());
+var sheetUpdated = Utilities.formatDate(new Date(), timeZone, 'dd/MM/yyyy');
 
-//Insert column/row where your account names. Column "A" equals 1, column "B" equals 2 and so on. 
-var columnAccountName = "1";
-var rowAccountName = "5";
+var rowInsert = 5;
+var daysTotal = getDays().totalDays;
+var daysLeft = getDays().daysLeft;
+var daysWent = daysTotal-daysLeft;
 
-//Insert column/row where we can write today's date to. 
-var ColumnTimer = "5";
-var rowTimer = "2";
-
-
-//Insert your email to get notified when script does not run properly 
-var email = "";
-
-
-
-//do not change anything below this line
-
-
+var columnLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', '0', 'P', 'Q', 'R', 'S'];
 
 function main() {
-  try {
-    MccApp.accounts().withCondition("LabelNames CONTAINS '" + ACCOUNT_LABEL + "'").withLimit(50).executeInParallel('processAccountJSON', 'writeToSheet');
+  Logger.log("--- BUDGET CHECKER");
+  Logger.log("--- DATE: " + now);
+  Logger.log("--- CREATED BY: " + "STIAN W. INSTEBØ");
+  Logger.log("PROCESS: Init..");
   
-  } catch (e) {
-    sendEmail(e);
+  sheet.getRange(2,5,1,4)//(start row, start column, number of rows, number of columns
+     .setValues([[
+                sheetUpdated,
+       			daysTotal,
+       			daysWent,
+       			daysLeft
+                ]]);
+
+  for (var columnIndex in columnLetters) {
+    //Logger.log("Clearing column: " + columnLetters[columnIndex]);
+    sheet.getRange(columnLetters[columnIndex] + '5' + ':' + columnLetters[columnIndex] + '50').clearContent();
   }
+  Logger.log("PROCESS: Clearing old values..");
+  
+  //var scriptName = "budgetCheckerCore.txt";
+  var scriptSource = runCore("budgetCheckerCore.txt");
+
+  if (scriptSource) {
+    //Logger.log("PROCESS:  '%s'",scriptName);
+    eval(scriptSource);
+    var script = eval('new '+remoteScript+'();');
+    script.main();
+
+  }
+  Logger.log("PROCESS: Script finished with no errors..");
 }
 
-//, 'writeToSheet'
-function processAccountJSON(){
-    var scriptName = "Budget_script_gas.txt";
-    var scriptText = retrieveScript(scriptName);
-
-    if (scriptText) {
-        eval(scriptText);
-        var script = eval('new '+remoteScript+'();');
-        var results = script.processAccountJSON();
-        return results;
-}
-}
-
-function writeToSheet(results) {
-    var scriptName = "Budget_script_gas.txt";
-    var scriptText = retrieveScript(scriptName);
-
-    if (scriptText) {
-        eval(scriptText);
-        var script = eval('new '+remoteScript+'();');
-        script.writeToSheet(results,SPREADSHEET_URL, SHEET_NAME, writeAccountsToSheet, checkNumberOfAccounts, column, row, columnAccountName,  ColumnTimer,  rowTimer);
-        script.GA();
-    }
-}
-
-
-
-
-function retrieveScript(scriptName) {
+function runCore(scriptName) {
     var fileIter = DriveApp.getFilesByName(scriptName);
     if (fileIter.hasNext()) {
         var file = fileIter.next();
@@ -91,37 +70,15 @@ function retrieveScript(scriptName) {
         return file.getBlob().getDataAsString();
     }
     else {
-        Logger.log("No script with name '%s' found",scriptName);
+        Logger.log("ERROR: No script with name '%s' found",scriptName);
         return;
     }
 }
 
-//Unreachable function that simply makes sure the loader script is authorized to do things the loaded script might need to do.
-function getAuthorization() {
-    var spreadsheet = SpreadsheetApp.openByUrl();
-    MailApp.sendEmail();
-    UrlFetchApp.fetch();
+function getDays() {
+  var d = new Date(Utilities.formatDate(new Date(), timeZone, "MMM dd,yyyy HH:mm:ss"));
+  var totalDays = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+
+  var daysSoFar = d.getDate() - 1;
+  return {daysLeft:(totalDays - daysSoFar),totalDays:totalDays};
 }
-
-
-
-
-
-
-function sendEmail(e) {
-  var footerStyle = 'color: #aaaaaa; font-style: italic;';
-  var subject = 'Budget script failed to run - ' + e;
-
-  var htmlBody = '<html><body>' +
-    '<p>Hi,</p>' +
-    '<p>There was a problem with the script: ' +
-    e + '</p>' +
-    '<p> If you are unsure about how to fix this. Contact Vegard at vegard.garder@synlighet.no</p>' +
-    '</body></html>';
-  var body = 'Please enable HTML to view this report.';
-  var options = {
-    htmlBody: htmlBody
-  };
-  MailApp.sendEmail(email, subject, body, options);
-}
-
