@@ -2,7 +2,7 @@
 Google Ads App Scripts
 
 Overview:
-- budgetChecker.gs     (Get account spend in the last 7 & 30 days)
+- budgetChecker.gs     (Sandbox loader)
 - budgetCheckerCore.txt     (Core module for the checker)
 
 Installation:
