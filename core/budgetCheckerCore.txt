@@ -1,0 +1,118 @@
+/** 
+Name: budgetCheckCore.txt
+Description: Core functions called, making the script update seamlessly
+Function: Check all accounts + campaign budgets
+(c): Stian Wiik Instebø - 2019
+**/
+
+function remoteScript() {
+    this.main = function() {
+         //Code here will be executed
+         Logger.log("PROCESS: Runnning core..");
+         budgetCheck();
+    }
+}
+
+function budgetCheck() {
+  var accountIterator = AdsManagerApp.accounts().withCondition('LabelNames CONTAINS "' + PPC_SPECIALIST + '"').get();
+  var managerAccount = AdsApp.currentAccount();
+  
+  while (accountIterator.hasNext()) {
+   	var account = accountIterator.next();
+    
+    AdsManagerApp.select(account);
+    
+    //Logger.log("DEBUG: row " + rowInsert);
+    //getCampaignStart()
+    
+    //Logger.log("Current row: " + rowInsert);
+    //Logger.log(account.getName() + " | Cost: " + account.getStatsFor("THIS_MONTH").getCost() + account.getCurrencyCode() + " | (" + endDate + ") - (" + startDate + ")");
+    
+    var totalImpressionsDays = 0;
+    var totalImpressionsMonths = 0;
+    
+    var totalClicksDays = 0;
+    var totalClicksMonths = 0;
+    
+    var campaignIterator = AdsApp.campaigns().get();
+    Logger.log("INFO: Checking " + account.getName() + "..");
+    while (campaignIterator.hasNext()) {
+      var campaign = campaignIterator.next();
+      var campaignStatsDays = campaign.getStatsFor('LAST_7_DAYS');
+      var campaignStatsMonths = campaign.getStatsFor('THIS_MONTH');
+      /*var statsDays = campaign.getStatsFor('LAST_7_DAYS');
+      
+      var statsClicksMonth = campaign.getStatsFor('THIS_MONTH');
+      var statsClicksDays = campaign.getStatsFor('LAST_7_DAYS');*/
+      
+      Logger.log("INFO> " + campaign.getName() + ": " + campaign.getStatsFor("THIS_MONTH").getCost() + account.getCurrencyCode());
+      //Logger.log(account.getName() + " | " + campaign.getName() + " | Stats: " + //campaign.getStatsFor("THIS_MONTH").getCost() + account.getCurrencyCode());
+      //getBudgetDetails(campaign.getName(), campaign.getStatsFor("THIS_MONTH").getCost());
+      //startDateArray.push(campaign.getStartDate().year + campaign.getStartDate().month + campaign.getStartDate().day);
+      
+      /** BUILD FUNCTION FOR RE-USE PASSING params **/
+      totalImpressionsDays = totalImpressionsDays + campaignStatsDays.getImpressions();
+      totalImpressionsMonths = totalImpressionsMonths + campaignStatsMonths.getImpressions();
+      
+      totalClicksDays = totalClicksDays + campaignStatsDays.getClicks();
+      totalClicksMonths = totalClicksMonths + campaignStatsMonths.getClicks();
+      /********* *********/
+  	}
+    
+    //Logger.log("7: " + totalImpressionsDays);
+    //Logger.log("30: " + totalImpressionsMonths);
+    /*for(var i=0;i<startDateArray.length;i++){
+      Logger.log("loop");
+    }*/
+    //var highest = Math.max(startDateArray);
+    //Logger.log(highest);
+    
+    //Logger.log(campaign.getName() + ', ' + stats.getClicks() + 'clicks, ' +
+    //    stats.getImpressions() + ' impressions');
+    // var data = Range.getCell(0, 0);
+    var sheetLookup = ss.getSheetByName('Lookup'); // or whatever is the name of the sheet 
+    var rangeLookup = sheetLookup.getRange(rowInsert,3); 
+    var accountBudget = rangeLookup.getValue();
+    //ss.getSheetByName("Form Responses 1").getRange(i+2,6).setBackground("red");
+    //Logger.log("Lookup:" + data);
+    /**var budgetData = sheet.getRange('A:S').getDisplayValues();
+    var range = [];
+    budgetData.forEach(function(e, i){
+      if (e[0] == "0") range.push("A" + (i + 1));
+    });
+    sheet.getRangeList(range).clearContent();**/
+    
+    sheet.getRange(rowInsert,1,1,20)//(start row, start column, number of rows, number of columns
+     .setValues([[
+                 account.getName(),
+                 account.getCustomerId(),
+                 "=Lookup!C" + rowInsert,
+       			 account.getStatsFor("LAST_7_DAYS").getCost(),
+       			 account.getStatsFor("THIS_MONTH").getCost(),
+       			 "=K" + rowInsert + "-C"+ rowInsert,
+
+       			 "=F" + rowInsert + "/C"+ rowInsert,
+       
+       			 "=D" + rowInsert + "/7",
+       			 "=IFERROR((C" + rowInsert + "-E"+ rowInsert + ")/$H$2,0)",
+       			 "=(" + rowInsert + "/$F$2)*$G$2",
+       			 "=if($H$2=0,E" + rowInsert + "+(H" + rowInsert + "*1),E" + rowInsert + "+(H" + rowInsert + "*$H$2))",
+       			 "",
+       			 "",
+       			 "",
+       			 totalImpressionsDays,
+       			 totalImpressionsMonths,
+       			 totalClicksDays,
+       			 totalClicksMonths,
+       			 "=R" + rowInsert + "/" + "P"  + rowInsert,
+       			 campaignIterator.totalNumEntities()
+                ]]);
+    
+    sheetLookup.getRange(rowInsert,2,1,1)//(start row, start column, number of rows, number of columns
+     .setValues([[
+                 account.getName()
+                ]]);
+    //Logger.log('Total campaigns found : ' + campaignIterator.totalNumEntities());
+    rowInsert = rowInsert + 1;
+  } 
+}
