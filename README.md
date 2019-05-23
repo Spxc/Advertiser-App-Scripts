@@ -2,8 +2,8 @@
 Google Ads App Scripts
 
 Overview:
-- budgetChecker.gs     (Sandbox loader)
-- budgetCheckerCore.txt     (Core module for the checker)
+- | RUNTIME: 20 sec | budgetChecker.gs     (Sandbox loader)
+- | RUNTIME: 1.05 min | budgetCheckerCore.txt     (Core module for the checker)
 
 Installation:
 1. Add this: https://docs.google.com/spreadsheets/u/2/d/1W0Y6Obs98PSX_DRdJBbMfBNghdn48weyH4uXfRm-_vA/edit#gid=0 sheet to your own Google Drive
