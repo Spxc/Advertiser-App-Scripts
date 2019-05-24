@@ -1,5 +1,5 @@
-# Asvertiser-Ads-Scripts
-Asvertiser Ads App Scripts
+# Advertiser-Ads-Scripts
+Advertiser Ads App Scripts
 
 Google Ads
 - | RUNTIME: 20 sec | budgetChecker.gs     (Sandbox loader)
