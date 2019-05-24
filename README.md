@@ -1,12 +1,13 @@
 # Asvertiser-Ads-Scripts
 Asvertiser Ads App Scripts
 
-Overview:
-- Google Ads
+Google Ads
 - | RUNTIME: 20 sec | budgetChecker.gs     (Sandbox loader)
 - | RUNTIME: 1.05 min | budgetCheckerCore.txt     (Core module for the checker)
 
-- Bing Ads
+Bing Ads
+-
+-
 
 
 Installation Google Ads:
