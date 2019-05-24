@@ -1,18 +1,15 @@
 # Advertiser-Ads-Scripts
 Advertiser Ads App Scripts
 
-Google Ads
-- | RUNTIME: 20 sec | budgetChecker.gs     (Sandbox loader)
-- | RUNTIME: 1.05 min | budgetCheckerCore.txt     (Core module for the checker)
-
 Google Ads (01.25s)
 -
-- budgetChecker.gs
-- budgetCheckerCore.txt
+- budgetChecker.gs............... Main function code
+- budgetCheckerCore.txt.......... Core module, seamless updates
 
-Bing Ads
+Bing Ads (01.30s)
 -
--
+- budgetChecker.txt.............. Main function code
+- uploadDataGoogleSheets.txt..... Upload data to cloud
 
 
 
@@ -22,3 +19,11 @@ Installation Google Ads:
 2. Upload bugetCheckerCore.txt to Private/Team Drive
 3. Add the script to MCC level
 4. Run the script
+
+Installation Bing Ads:
+1. Add this: $URL to your own Google Drive
+2. Add the script to your Bing Manager account
+3. Get Google API creditals, including a refresh token
+4. Modify and insert the needed params from API console
+5. Add your PCC_SPECIALIST name to the script
+6. Run the script
