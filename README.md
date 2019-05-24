@@ -9,6 +9,10 @@ Bing Ads
 -
 -
 
+Google Ads
+-
+-
+
 
 Installation Google Ads:
 1. Add this: https://docs.google.com/spreadsheets/u/2/d/1W0Y6Obs98PSX_DRdJBbMfBNghdn48weyH4uXfRm-_vA/edit#gid=0 sheet to your own Google Drive
