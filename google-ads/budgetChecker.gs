@@ -1,5 +1,6 @@
 /** 
-Name: budgetCheck
+Name: budgetChecker
+Platform: Google Ads 
 Function: Budget checker for accounts from MCC
 (c): Stian Wiik Instebø - 2019
 **/
