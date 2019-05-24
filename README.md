@@ -5,13 +5,16 @@ Google Ads
 - | RUNTIME: 20 sec | budgetChecker.gs     (Sandbox loader)
 - | RUNTIME: 1.05 min | budgetCheckerCore.txt     (Core module for the checker)
 
+Google Ads (01.25s)
+-
+- budgetChecker.gs
+- budgetCheckerCore.txt
+
 Bing Ads
 -
 -
 
-Google Ads
--
--
+
 
 
 Installation Google Ads:
