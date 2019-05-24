@@ -1,0 +1,42 @@
+/** 
+Name: budgetChecker
+Platform: Bing Ads
+Function: Budget checker for accounts
+(c): Stian Wiik Instebø - 2019
+**/
+
+/** GLOBAL VARS **/
+var PPC_SPECIALIST = ""
+
+function main() {
+    var accounts = AccountsApp.accounts()
+        .get();
+
+    while (accounts.hasNext()) {
+        var accountCurr = AdsApp.currentAccount();
+        var account = accounts.next();
+        
+        Logger.log("Account ID: " + account.getAccountId());
+        Logger.log("Account name: " + account.getName());
+        Logger.log("Account number: " + account.getAccountNumber());
+        //Logger.log("Cost account: " + account.getStats().getCost);
+        Logger.log("Customer ID: " + account.getCustomerId());
+        Logger.log("Currency code: " + account.getCurrencyCode());
+        Logger.log("Time zone: " + account.getTimeZone() + "\n\n");
+        Logger.log("current acc: " + accountCurr);
+
+        var accountBing = AccountsApp.accounts()
+            .withIds([account.getAccountId()])
+            .forDateRange("LAST_WEEK")
+            .get()
+            .next();
+
+        AccountsApp.select(accountBing);
+
+        var stats = accountBing.getStats();
+        var accountCost = stats.getCost();
+        var convertedClicks = stats.getConversions();
+        Logger.log("Acc cost: " + accountCost);
+
+    }
+}
